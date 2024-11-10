@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Guards</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #wave {
+            display: none;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+        </style>
+</head>
+    <nav>
+        <div class="logo">WATER GUARDS</div>
+        <div class="nav-items"> <a href="index.html">Ev</a>
+        <a href="aboutus.html">About Us</a>
+        <a href="simulation.html">Activity</a>
+        </div>
+        <img src="download.png" alt="Responsive Image" class="responsive-image
+    </nav>
+    <section class="sml"></section>
+        <div class="sml-container">
+            <div class="column-left3">
+                <h1>Welcome!</h1>
+                <p>This activity is designed for you to understand our project better. You are a farmer here. The lake in front of you is the one you use for your farming. Using the buttons, you can control the amount of water you use and how much you pollute the water with your waste. Do not forget that there will be a consequence for each of your decisions!</p>
+            </div>
+    <nav>
+    </nav>
+<body>
+    
+    <div class="container">
+        <canvas id="canvas" width="660" height="539"></canvas>
+       
+
+        <div class="variables-container">
+            <div class="variable">
+                <h2>Water Usage</h2>
+                <button onclick="incLv()">⬆️</button>
+                <button onclick="decLv()">⬇️</button>
+            </div>
+            <div class="variable">
+                <h2>Water Pollution</h2>
+                <button onclick="incPl()">⬆️</button>
+                <button onclick="decPl()">⬇️</button>
+        </div>
+    
+        </div>
+        <script>
+            const drawY = (y, c) => {
+                let canvas = document.getElementById('canvas')
+                const ctx = canvas.getContext('2d')
+                const img = new Image()
+                img.src = "download.png"
+                img.onload = () => {
+                    if (c == bl) ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+                    const data = imageData.data
+                    ctx.beginPath()
+                    st = [], en = []
+                    for (y; y < canvas.height; y++) {
+                        let a = []
+                        for (let x = 0; x < canvas.width; x++) {
+                            const index = (y * canvas.width + x) * 4
+                            const r = data[index]
+                            const g = data[index + 1]
+                            const b = data[index + 2]
+                            if (r == 128 && g < 30 && b < 30)
+                                a.push(x)
+                        }
+                        if (a.length > 0) {
+                            let n = a.length
+                            let s = -1
+                            for (let i = 0; i < n; i ++) {
+                                if (a[i + 1] - a[i] > 1) {
+                                    s = i
+                                    break
+                                }
+                            }
+                            if (-1 == s) continue
+                            st.push({f : a[s], s : y})
+                            en.push({f : a[s + 1], s : y})
+                        }
+                    }
+                    for (let i of st)
+                        ctx.lineTo(i.f, i.s + 1)
+                    en.reverse()
+                    for (let i of en)
+                        ctx.lineTo(i.f, i.s + 1)
+                    ctx.closePath()
+                    ctx.fillStyle = c
+                    ctx.fill()
+                }
+            }
+            let lv = 200
+            let pl = 510
+            const bl = 'rgba(102, 255, 255, 1)'
+            const gr = 'rgba(0, 255, 0, 1)'
+            const incLv = () => {
+                lv += 40
+                drawY(lv, bl)
+                drawY(pl, gr)
+                increaseUsage()
+            }
+            const decLv = () => {
+                lv += 20
+                drawY(lv, bl)
+                drawY(pl, gr)
+                decreaseUsage()
+            }
+            const incPl = () => {
+                pl -= 4
+                drawY(lv, bl)
+                drawY(pl, gr)
+                increasePollution()
+            }
+            const decPl = () => {
+                pl -= 4
+                drawY(lv, bl)
+                drawY(pl, gr)
+                decreasePollution()
+            }
+            drawY(lv, bl)
+            drawY(pl, gr)
+        </script>
+        <div id="message-box">
+            <p id="message"></p>
+        </div>
+    </div>
+
+    <button id="finish-button" onclick="finishSimulation()">Finish Activity</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
